@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    {% load static %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot</title>
+    <link rel="stylesheet" href="{% static 'stylee1.css' %}">
+    <link rel="stylesheet" href="{% static 'chatbot.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  </head>
+  <body>
+
+    <section>
+      <input type="checkbox" id="check">
+      <header>
+        <a href="#" class="logo"><u><b>PIEMR</u></b></a>
+        <div class="navigation">
+          <a href="/index/">Home</a>
+          <a href="/aboutus/">About Us</a>
+          <a href="/gallery/">Gallery</a>
+          <a href="#">Chatbot</a>
+          <a href="/contact/">Contact</a>
+        </div>
+        <label for="check">
+          <i class="fas fa-bars menu-btn"></i>
+          <i class="fas fa-times close-btn"></i>
+        </label>
+      </header>
+      
+        
+      <div class="media-icons">
+        <a href="https://www.facebook.com/PIEMR" target="_blank"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.piemr.edu.in/" target="_blank"><i class="fab fa-google"></i></a>
+        <a href="https://in.linkedin.com/school/piemr" target="_blank"><i class="fab fa-linkedin"></i></a>
+      </div>
+      <div class="bdy">
+      <div class="idol">
+        <div class="idol-1">
+            <div class="head">
+                <div class="bot-img">
+                    <img src="{% static './Images/chartbotlogo.gif' %}" style="height:40px; width:40px; border-radius:50%;">
+                </div>
+                <div class="bot-name">
+                    <h3>Mrs. PIEMR</h3>
+                </div>
+                <div class="status">
+                    <i class="fas fa-circle"></i>
+                </div>
+            </div>
+            <div class="main">
+                <div id="chatscreen" class="chat-screen">
+                    <div id="bot" class="bot">
+                            Hello, my name is Mrs. Piemr<br>
+                            May i help you..
+                    </div>
+                    <div id="user" class="user">
+                    </div>
+                </div>
+                <div class="keyboard">
+                    <div class="query">
+                        <form action="/chat/" class="sender">
+                            {% csrf_token %}
+                            <input class="recieve" type="text" name="query" placeholder="Ask Your Query">
+                        </form>
+                    </div>
+                    <div class="send">
+                        <button accesskey="enter" id="send">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="chatlogo">
+        <button onClick="open_chatbot()" class="open_chat"><img src="{% static './Images/chatbotlogo.gif' %}" style="height:100%; width:100%;"></button>
+      </div>
+    </div>
+
+    </section>
+
+  </body>
+  <script>
+    function open_chatbot(){
+      let op = document.querySelector(".idol")
+      if(op.style.display === "none"){
+         op.style.display="flex";
+      }else{
+          op.style.display="none"
+      }
+    }
+        
+    const chat_screen = document.querySelector("#chatscreen")
+    const bot = document.querySelector("#bot")
+    const user = document.querySelector("#user")
+    //const user_msg =  document.createElement("div")
+    const recieve = document.querySelector(".recieve")
+    function downscroll(){
+      var elem = document.getElementById('chatscreen');
+      elem.scrollTop = elem.scrollHeight+elem.clientHeight
+    }
+
+    function msg(message, side){
+        const msgs = document.createElement('div')
+        setTimeout(downscroll, 500)
+        console.log(message)
+        
+        msgs.style.textAlign = side
+        msgs.style.borderRadius="25px"
+        msgs.style.fontSize="100%"
+        msgs.backgroundColor = "red"
+        msgs.style.marginTop="6%"
+        if(side=="right"){
+            //let elem = document.getElementById('chatscreen')
+            //elem.scrollTop = elem.clientHeight;
+            msgs.innerHTML= "<p style='border-radius:25px;'>"+message+"</p>"
+            msgs.style.marginLeft="30%"
+            msgs.style.fontSize="100%"
+            msgs.style.float=side
+        }else{
+          msgs.innerHTML= "<p style='border-radius:25px;'>"+message+"</p>"
+        }
+        msgs.style.width = "70%";
+        chat_screen.append(msgs)
+    }
+
+        $(".sender").submit(function(e) {
+            e.preventDefault(); // avoid to execute the actual submit of the form.
+        
+            var form = $(this);
+            var url = form.attr('action');
+            if(recieve.value!=""){
+            const fake = recieve.value
+            msg(fake, "right")
+            
+            $.ajax({
+                   type: "POST",
+                   url: url,
+                   data: form.serialize(), // serializes the form's elements.
+                   success: function(data)
+                   {
+                    recieve.value=""
+                    msg(data['reply'], "left")
+                   }
+                   //success: msg(data)
+                 });
+                }
+                });
+
+    
+</script>
+</html>
